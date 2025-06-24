@@ -31,9 +31,18 @@ export function extractContactInfo(text: string): ContactInfo {
     // Exclude common email domains and email-like patterns
     const lowerMatch = match.toLowerCase();
     const emailDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'icloud.com', 'aol.com'];
-    return !emailDomains.some(domain => lowerMatch.includes(domain)) && 
-           !lowerMatch.includes('@') && 
-           !lowerMatch.match(/^[a-zA-Z0-9._%+-]+@/); // Exclude email addresses
+    
+    // Check if it's an email domain or email address
+    const isEmailDomain = emailDomains.some(domain => lowerMatch.includes(domain)) || 
+                         lowerMatch.includes('@') || 
+                         lowerMatch.match(/^[a-zA-Z0-9._%+-]+@/);
+    
+    // Check if it's already detected as LinkedIn or GitHub
+    const isLinkedIn = linkedin && lowerMatch.includes('linkedin.com');
+    const isGitHub = github && lowerMatch.includes('github.com');
+    
+    // Return true only if it's not an email and not already detected as LinkedIn/GitHub
+    return !isEmailDomain && !isLinkedIn && !isGitHub;
   });
 
   // Debug logging
@@ -117,4 +126,4 @@ export function extractExperience(text: string): Experience[] {
   }
 
   return experience;
-} 
+}

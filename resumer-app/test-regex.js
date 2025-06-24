@@ -24,8 +24,20 @@ const testCases = [
     text: "Email: john@yahoo.com, website: https://mysite.com, another: jane@hotmail.com"
   },
   {
-    name: "Complex contact info",
-    text: "Phone: (555)-123-4567, Email: test@gmail.com, Website: https://portfolio.com, LinkedIn: linkedin.com/in/johndoe"
+    name: "LinkedIn and GitHub links",
+    text: "LinkedIn: linkedin.com/in/johndoe, GitHub: github.com/johndoe, Website: https://portfolio.com"
+  },
+  {
+    name: "LinkedIn link should not appear in website",
+    text: "Check my LinkedIn: linkedin.com/in/johndoe and my portfolio at https://mysite.com"
+  },
+  {
+    name: "GitHub link should not appear in website",
+    text: "My GitHub: github.com/johndoe and my blog: https://blog.com"
+  },
+  {
+    name: "Complex contact info with all types",
+    text: "Phone: (555)-123-4567, Email: test@gmail.com, LinkedIn: linkedin.com/in/johndoe, GitHub: github.com/johndoe, Website: https://portfolio.com"
   }
 ];
 
@@ -59,6 +71,15 @@ function testRegexPatterns() {
       if (result.website && ['gmail.com', 'yahoo.com', 'hotmail.com'].some(domain => 
         result.website.toLowerCase().includes(domain))) {
         console.log('  ⚠️  Website appears to be an email domain');
+      }
+      
+      // Check for LinkedIn/GitHub duplication
+      if (result.website && result.linkedin && result.website.includes('linkedin.com')) {
+        console.log('  ❌ LinkedIn link appears in website field - should be filtered out');
+      }
+      
+      if (result.website && result.github && result.website.includes('github.com')) {
+        console.log('  ❌ GitHub link appears in website field - should be filtered out');
       }
       
     } catch (error) {
