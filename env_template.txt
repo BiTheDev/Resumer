@@ -1,0 +1,10 @@
+# Azure Form Recognizer Configuration
+# Copy this to a file named .env and replace with your actual values
+
+AZURE_FORM_RECOGNIZER_ENDPOINT=https://your-resource-name.cognitiveservices.azure.com/
+AZURE_FORM_RECOGNIZER_KEY=your-form-recognizer-key-here
+
+# Note: 
+# 1. The endpoint should end with a forward slash (/)
+# 2. The key should be the primary or secondary key from your Azure Form Recognizer resource
+# 3. Make sure your Azure Form Recognizer resource is in a region that supports the models you want to use 
