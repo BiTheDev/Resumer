@@ -30,4 +30,5 @@ export interface ResumeData {
   fullText: string;
   confidence: number;
   pages: number;
+  usedFallback?: boolean;
 } 
