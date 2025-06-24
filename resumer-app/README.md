@@ -1,10 +1,10 @@
 # Resume Parser API
 
-A Next.js application that uses Azure Form Recognizer to extract structured information from resume PDFs and images.
+A Next.js application that uses Azure Form Recognizer to extract structured information from resume PDFs and Word documents.
 
 ## Features
 
-- 📄 **Multi-format Support**: Upload PDF, PNG, JPG, or JPEG files
+- 📄 **Document Support**: Upload PDF, DOC, or DOCX files
 - 🎯 **Smart Extraction**: Extracts contact info, skills, experience, and education
 - 📊 **Table Detection**: Identifies and parses tables in resumes
 - 🔗 **Key-Value Pairs**: Extracts form fields and structured data
@@ -16,7 +16,7 @@ A Next.js application that uses Azure Form Recognizer to extract structured info
 - **Frontend**: Next.js 15, React 19, TypeScript, Tailwind CSS
 - **Backend**: Next.js API Routes
 - **AI/ML**: Azure Form Recognizer
-- **File Processing**: PDF and image parsing
+- **File Processing**: PDF and Word document parsing
 
 ## Setup
 
@@ -56,7 +56,7 @@ Open [http://localhost:3000](http://localhost:3000) to view the application.
 
 ## Usage
 
-1. **Upload Resume**: Drag and drop or click to upload your resume file
+1. **Upload Resume**: Drag and drop or click to upload your resume file (PDF, DOC, or DOCX)
 2. **Processing**: The app will analyze your document using Azure Form Recognizer
 3. **View Results**: See extracted information organized into sections:
    - Contact Information (emails, phones, LinkedIn, GitHub, website)
@@ -76,6 +76,11 @@ Upload and parse a resume file.
 - Method: `POST`
 - Content-Type: `multipart/form-data`
 - Body: Form data with `file` field containing the resume
+
+**Supported Formats:**
+- PDF (.pdf)
+- Word Document (.doc)
+- Word Document (.docx)
 
 **Response:**
 ```json
@@ -159,7 +164,7 @@ If you get a model not found error:
 
 ### File Upload Issues
 
-1. Ensure the file is a supported format (PDF, PNG, JPG, JPEG)
+1. Ensure the file is a supported format (PDF, DOC, DOCX)
 2. Check file size (Azure has limits)
 3. Verify the file isn't corrupted
 

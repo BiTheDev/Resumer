@@ -13,16 +13,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate file type
-    if (!file.type.includes('pdf') && !file.type.includes('image')) {
+    console.log(`Received file: ${file.name}, size: ${file.size} bytes, type: ${file.type}`);
+
+    // Validate file type - only PDF and Word documents
+    const supportedTypes = [
+      'application/pdf',
+      'application/msword', // .doc
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document' // .docx
+    ];
+
+    if (!supportedTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: 'Only PDF and image files are supported' },
+        { error: `Unsupported file type: ${file.type}. Only PDF and Word documents (.pdf, .doc, .docx) are supported.` },
         { status: 400 }
       );
     }
 
     // Convert file to buffer
-    const buffer = Buffer.from(await file.arrayBuffer());
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    
+    console.log(`Converted to buffer: ${buffer.length} bytes`);
 
     // Parse resume
     const result = await parseResume(buffer, file.name);

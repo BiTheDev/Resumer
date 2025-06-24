@@ -50,7 +50,7 @@ export default function FileUpload({ onFileSelect, isLoading }: FileUploadProps)
       >
         <input
           type="file"
-          accept=".pdf,.png,.jpg,.jpeg"
+          accept=".pdf,.doc,.docx"
           onChange={handleChange}
           className="hidden"
           id="file-upload"
@@ -66,7 +66,7 @@ export default function FileUpload({ onFileSelect, isLoading }: FileUploadProps)
               Drag and drop your resume here, or click to browse
             </div>
             <div className="text-xs text-gray-400">
-              Supports PDF, PNG, JPG, JPEG
+              Supports PDF, DOC, DOCX
             </div>
           </div>
         </label>
