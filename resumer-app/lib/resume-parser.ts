@@ -1,6 +1,7 @@
 import { client } from './azure-client';
 import { extractContactInfo, extractSkills, extractExperience } from '@/utils/regex-patterns';
 import { ResumeData } from './types';
+import mammoth from 'mammoth';
 
 export async function parseResume(fileBuffer: Buffer, fileName: string): Promise<ResumeData> {
   try {
@@ -24,6 +25,7 @@ export async function parseResume(fileBuffer: Buffer, fileName: string): Promise
     
     let result;
     let successfulModel = "prebuilt-document";
+    let usedFallback = false;
     
     try {
       const poller = await client.beginAnalyzeDocument("prebuilt-document", fileBuffer);
@@ -52,9 +54,11 @@ export async function parseResume(fileBuffer: Buffer, fileName: string): Promise
 
     // Extract all text content
     let allText = "";
-    if (result.pages) {
+
+    // Prefer lines from pages
+    if (result.pages && result.pages.length > 0) {
       for (const page of result.pages) {
-        if (page.lines) {
+        if (page.lines && page.lines.length > 0) {
           for (const line of page.lines) {
             allText += line.content + " ";
           }
@@ -62,11 +66,35 @@ export async function parseResume(fileBuffer: Buffer, fileName: string): Promise
       }
     }
 
+    // Fallback: use result.content if pages are empty
+    if (allText.trim().length === 0 && result.content) {
+      console.log("Using fallback: result.content");
+      allText = result.content;
+      usedFallback = true;
+    }
+
+    // Final fallback: use Mammoth for Word documents if Azure extraction is empty
+    if (allText.trim().length === 0 && (fileName.toLowerCase().endsWith('.doc') || fileName.toLowerCase().endsWith('.docx'))) {
+      console.log("Using Mammoth fallback for Word document");
+      try {
+        const mammothResult = await mammoth.extractRawText({ buffer: fileBuffer });
+        allText = mammothResult.value;
+        usedFallback = true;
+        console.log("Mammoth successfully extracted text");
+      } catch (mammothError) {
+        console.error("Mammoth fallback also failed:", mammothError);
+      }
+    }
+
     console.log(`Extracted text length: ${allText.length} characters`);
+    console.log(`Text trimmed length: ${allText.trim().length} characters`);
+    console.log(`Has content: ${allText.trim().length > 0 ? 'Yes' : 'No'}`);
+    console.log(`Used fallback: ${usedFallback ? 'Yes' : 'No'}`);
     
     // Show sample of extracted text for debugging
     if (allText.length > 0) {
       console.log(`Sample text (first 200 chars): ${allText.substring(0, 200)}`);
+      console.log(`Sample text (last 200 chars): ${allText.substring(Math.max(0, allText.length - 200))}`);
     } else {
       console.warn('No text was extracted from the document');
     }
@@ -105,7 +133,8 @@ export async function parseResume(fileBuffer: Buffer, fileName: string): Promise
       tables,
       fullText: allText,
       confidence: result.documents?.[0]?.confidence || 0,
-      pages: result.pages?.length || 0
+      pages: result.pages?.length || 0,
+      usedFallback
     };
 
   } catch (error) {
